@@ -1,5 +1,8 @@
 package dev.puzzleshq.solarflare.carutil;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 public class CoronaArchiveEntry {
@@ -21,6 +24,16 @@ public class CoronaArchiveEntry {
 
     public byte[] getContents() {
         return contents;
+    }
+
+    public String asString() {
+        return new String(contents);
+    }
+
+    public void export(File file) throws IOException {
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        fileOutputStream.write(contents);
+        fileOutputStream.close();
     }
 
     private static int getDataPaddingLength(int baseLength) {
