@@ -62,23 +62,21 @@ public class CoronaArchive {
                 continue;
             }
 
-            if (file.isFile()) {
-                FileInputStream fileInputStream = new FileInputStream(file);
-                DataInputStream dataInputStream = new DataInputStream(fileInputStream);
+            FileInputStream fileInputStream = new FileInputStream(file);
+            DataInputStream dataInputStream = new DataInputStream(fileInputStream);
 
-                byte[] bytes = new byte[fileInputStream.available()];
-                dataInputStream.readFully(bytes, 0, bytes.length);
+            byte[] bytes = new byte[fileInputStream.available()];
+            dataInputStream.readFully(bytes, 0, bytes.length);
 
-                dataInputStream.close();
-                fileInputStream.close();
+            dataInputStream.close();
+            fileInputStream.close();
 
-                CoronaArchiveEntry entry = new CoronaArchiveEntry();
-                entry.setName(parent + "/" + cFile.getName());
-                entry.setContents(bytes);
+            CoronaArchiveEntry entry = new CoronaArchiveEntry();
+            entry.setName(parent + "/" + cFile.getName());
+            entry.setContents(bytes);
 
-                this.addEntry(entry);
-                return;
-            }
+            this.addEntry(entry);
+            return;
         }
     }
 
