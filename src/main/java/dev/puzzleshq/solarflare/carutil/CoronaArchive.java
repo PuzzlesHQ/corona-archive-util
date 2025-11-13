@@ -48,33 +48,37 @@ public class CoronaArchive {
         if (!file.exists())
             throw new IOException("File or Directory does not exist! -> \"" + file.getAbsolutePath() + "\"");
 
-        if (file.isFile()) {
-            FileInputStream fileInputStream = new FileInputStream(file);
-            DataInputStream dataInputStream = new DataInputStream(fileInputStream);
-
-            byte[] bytes = new byte[fileInputStream.available()];
-            dataInputStream.readFully(bytes, 0, bytes.length);
-
-            dataInputStream.close();
-            fileInputStream.close();
-
-            CoronaArchiveEntry entry = new CoronaArchiveEntry();
-            entry.setName(file.getName());
-            entry.setContents(bytes);
-
-            this.addEntry(entry);
-            return;
-        }
-
-        Queue<File> childFiles = new ArrayDeque<>();
-        childFiles.add(file);
+        Queue<Object[]> childFiles = new ArrayDeque<>();
+        childFiles.add(new Object[]{"", file});
         while (!childFiles.isEmpty()) {
-            File childFile = childFiles.poll();
-            if (childFile.isDirectory()) {
-                childFiles.addAll(Arrays.asList(Objects.requireNonNull(childFile.listFiles())));
+            Object[] childFile = childFiles.poll();
+            String parent = ((String)childFile[0]);
+            File cFile = ((File) childFile[1]);
+
+            if (cFile.isDirectory()) {
+                for (File listFile : Objects.requireNonNull(cFile.listFiles())) {
+                    childFiles.add(new Object[]{parent + "/" + cFile.getName(), listFile});
+                }
                 continue;
             }
-            addFileOrDir(childFile);
+
+            if (file.isFile()) {
+                FileInputStream fileInputStream = new FileInputStream(file);
+                DataInputStream dataInputStream = new DataInputStream(fileInputStream);
+
+                byte[] bytes = new byte[fileInputStream.available()];
+                dataInputStream.readFully(bytes, 0, bytes.length);
+
+                dataInputStream.close();
+                fileInputStream.close();
+
+                CoronaArchiveEntry entry = new CoronaArchiveEntry();
+                entry.setName(parent + "/" + cFile.getName());
+                entry.setContents(bytes);
+
+                this.addEntry(entry);
+                return;
+            }
         }
     }
 
